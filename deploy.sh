@@ -17,7 +17,7 @@ guest_script=$(mktemp)
 cat <<EOF > "$rotate_script"
 #!/bin/sh
 
-password=\$(cat /dev/urandom | env LC_CTYPE=C tr -dc A-HJ-NP-Za-kmnp-z2-9 | head -c 8; echo;)
+password=\$(cat /dev/urandom | env LC_CTYPE=C tr -dc A-HJ-NP-Za-kmnp-z2-9 | head -c 12; echo;)
 
 echo \$password > /root/.guest_password.txt
 
