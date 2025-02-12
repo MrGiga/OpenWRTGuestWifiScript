@@ -1,9 +1,10 @@
 #!/bin/sh
 
+#WIFI_NAME_HERE in deploy.sh needs to be replaced with the WIFI name of the guest network.
 #Assumption is that you only have 3 or less network interfaces. While loop in rotate_guest_wifi_password needs to be increased otherwise
 
 
-WIFI_NAME="" #REPLACE THIS WITH THE WIFI NETWORK NAME
+WIFI_NAME="" #REPLACE THIS WITH YOUR WIFI_NAME
 
 if [ -z "$WIFI_NAME" ]; then
     echo "Please set the WIFI_NAME variable in the script"
@@ -31,6 +32,9 @@ while [ \$i -le 2 ]; do
     fi
     i=\$((i+1))
 done
+
+qrencode --type=SVG -o /www/images/wifi.svg "WIFI:S:\$ssid;T:\$security;P:\$password;;" 
+
 EOF
 
 chmod +x "$rotate_script"
@@ -55,6 +59,7 @@ echo "<div style='text-align:center;color:#fff;font-family:UnitRoundedOT,Helveti
 echo "<h1>Guest WIFI Password</h1>"
 echo "<p>SSID: <b>$WIFI_NAME</b></p>"
 echo "<p>PASSWORD: <b>\$password</b></p>"
+echo '<img src=../images/wifi.svg style="width:100%;max-width:600px;"></img><br>'
 echo "</div>"
 echo "</body>"
 echo "</html>"
