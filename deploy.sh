@@ -13,6 +13,10 @@ fi
 rotate_script=$(mktemp)
 guest_script=$(mktemp)
 
+if ! command -v qrencode >/dev/null 2>&1; then
+    echo "Error: qrencode is not installed. Please install it first."
+    exit 1
+fi
 
 cat <<EOF > "$rotate_script"
 #!/bin/sh
@@ -23,16 +27,14 @@ echo \$password > /root/.guest_password.txt
 
 ssid=$WIFI_NAME
 security=WPA
-i=0
-while [ \$i -le 2 ]; do
-    if [ "\$(uci get wireless.@wifi-iface[\$i].network)" = 'guest' ]; then
-        uci set wireless.@wifi-iface[\$i].key=\$password
-        uci commit wireless
-        wifi
-    fi
-    i=\$((i+1))
+uci show wireless | grep "network='guest'" | cut -d. -f2 | cut -d= -f1 | while read sec; do
+    uci set wireless.\$sec.key="\$password"
 done
 
+uci commit wireless
+wifi reload
+
+[ ! -d /www/images ] && mkdir -p /www/images
 qrencode --type=SVG -o /www/images/wifi.svg "WIFI:S:\$ssid;T:\$security;P:\$password;;" 
 
 EOF
